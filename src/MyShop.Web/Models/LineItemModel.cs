@@ -1,10 +1,7 @@
-﻿using System;
+﻿namespace MyShop.Web.Models;
 
-namespace MyShop.Web.Models
+public class LineItemModel
 {
-  public class LineItemModel
-  {
-    public Guid ProductId { get; set; }
-    public int Quantity { get; set; }
-  }
+  public Guid ProductId { get; set; }
+  public int Quantity { get; set; }
 }

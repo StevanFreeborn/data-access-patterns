@@ -1,11 +1,10 @@
-﻿namespace MyShop.Web.Models
+﻿namespace MyShop.Web.Models;
+
+public class CustomerModel
 {
-  public class CustomerModel
-  {
-    public string Name { get; set; }
-    public string ShippingAddress { get; set; }
-    public string City { get; set; }
-    public string PostalCode { get; set; }
-    public string Country { get; set; }
-  }
+  public string Name { get; set; } = string.Empty;
+  public string ShippingAddress { get; set; } = string.Empty;
+  public string City { get; set; } = string.Empty;
+  public string PostalCode { get; set; } = string.Empty;
+  public string Country { get; set; } = string.Empty;
 }

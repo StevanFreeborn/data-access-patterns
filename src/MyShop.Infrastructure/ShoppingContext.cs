@@ -2,22 +2,21 @@
 
 using MyShop.Domain.Models;
 
-namespace MyShop.Infrastructure
+namespace MyShop.Infrastructure;
+
+
+public class ShoppingContext : DbContext
 {
+  public DbSet<Customer> Customers { get; set; }
 
-  public class ShoppingContext : DbContext
+  public DbSet<Order> Orders { get; set; }
+
+  public DbSet<Product> Products { get; set; }
+
+  protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
-    public DbSet<Customer> Customers { get; set; }
-
-    public DbSet<Order> Orders { get; set; }
-
-    public DbSet<Product> Products { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-      optionsBuilder
-          // .UseLazyLoadingProxies()
-          .UseSqlite("Data Source=orders.db");
-    }
+    optionsBuilder
+        // .UseLazyLoadingProxies()
+        .UseSqlite("Data Source=orders.db");
   }
 }

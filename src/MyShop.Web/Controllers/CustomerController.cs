@@ -1,35 +1,31 @@
-﻿using System;
-using System.Linq;
-
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 using MyShop.Infrastructure;
 
-namespace MyShop.Web.Controllers
+namespace MyShop.Web.Controllers;
+
+public class CustomerController : Controller
 {
-  public class CustomerController : Controller
+  private readonly ShoppingContext context;
+
+  public CustomerController()
   {
-    private readonly ShoppingContext context;
+    context = new ShoppingContext();
+  }
 
-    public CustomerController()
+  public IActionResult Index(Guid? id)
+  {
+    if (id == null)
     {
-      context = new ShoppingContext();
+      var customers = context.Customers.ToList();
+
+      return View(customers);
     }
-
-    public IActionResult Index(Guid? id)
+    else
     {
-      if (id == null)
-      {
-        var customers = context.Customers.ToList();
+      var customer = context.Customers.Find(id.Value);
 
-        return View(customers);
-      }
-      else
-      {
-        var customer = context.Customers.Find(id.Value);
-
-        return View(new[] { customer });
-      }
+      return View(new[] { customer });
     }
   }
 }

@@ -1,20 +1,17 @@
-﻿using System;
+﻿namespace MyShop.Domain.Models;
 
-namespace MyShop.Domain.Models
+public class Customer
 {
-  public class Customer
+  public Guid CustomerId { get; set; }
+
+  public string Name { get; set; } = string.Empty;
+  public string ShippingAddress { get; set; } = string.Empty;
+  public string City { get; set; } = string.Empty;
+  public string PostalCode { get; set; } = string.Empty;
+  public string Country { get; set; } = string.Empty;
+
+  public Customer()
   {
-    public Guid CustomerId { get; set; }
-
-    public string Name { get; set; }
-    public string ShippingAddress { get; set; }
-    public string City { get; set; }
-    public string PostalCode { get; set; }
-    public string Country { get; set; }
-
-    public Customer()
-    {
-      CustomerId = Guid.NewGuid();
-    }
+    CustomerId = Guid.NewGuid();
   }
 }

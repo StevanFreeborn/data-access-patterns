@@ -5,6 +5,8 @@
 
 # dbs
 *.db
+*.db-shm
+*.db-wal
 
 # appsettings
 appsettings*.json

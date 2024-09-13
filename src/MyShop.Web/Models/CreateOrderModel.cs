@@ -2,7 +2,7 @@
 
 public class CreateOrderModel
 {
-  public IEnumerable<LineItemModel> LineItems { get; set; } = [];
+  public List<LineItemModel> LineItems { get; set; } = [];
 
   public CustomerModel Customer { get; set; } = new CustomerModel();
 }

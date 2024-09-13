@@ -1,42 +1,34 @@
 ﻿using System.Diagnostics;
+using System.Linq.Expressions;
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 using MyShop.Domain.Models;
-using MyShop.Infrastructure;
+using MyShop.Infrastructure.Repositories;
 using MyShop.Web.Models;
 
 namespace MyShop.Web.Controllers;
 
-public class OrderController : Controller
+public class OrderController(IRepository<Order> orderRepository, IRepository<Product> productRepository) : Controller
 {
-  private readonly ShoppingContext context;
+  private readonly IRepository<Order> _orderRepository = orderRepository;
+  private readonly IRepository<Product> _productRepository = productRepository;
 
-  public OrderController()
+  public async Task<IActionResult> Index()
   {
-    context = new ShoppingContext();
-  }
-
-  public IActionResult Index()
-  {
-    var orders = context.Orders
-      .Include(order => order.LineItems)
-      .ThenInclude(lineItem => lineItem.Product)
-      .Where(order => order.OrderDate > DateTime.UtcNow.AddDays(-1)).ToList();
-
+    Expression<Func<Order, bool>> criteria = order => order.OrderDate > DateTime.UtcNow.AddDays(-1);
+    var orders = await _orderRepository.Find(criteria);
     return View(orders);
   }
 
-  public IActionResult Create()
+  public async Task<IActionResult> Create()
   {
-    var products = context.Products.ToList();
-
+    var products = await _productRepository.All();
     return View(products);
   }
 
   [HttpPost]
-  public IActionResult Create(CreateOrderModel model)
+  public async Task<IActionResult> Create([FromBody] CreateOrderModel model)
   {
     if (!model.LineItems.Any()) return BadRequest("Please submit line items");
 
@@ -60,10 +52,8 @@ public class OrderController : Controller
       Customer = customer
     };
 
-    context.Orders.Add(order);
-
-    context.SaveChanges();
-
+    await _orderRepository.AddAsync(order);
+    await _orderRepository.SaveChangesAsync();
     return Ok("Order Created");
   }
 

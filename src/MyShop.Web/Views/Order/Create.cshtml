@@ -35,7 +35,7 @@
         <div class="mb-lg-5">
           Items
           <ul class="list-group">
-            <li v-for="line in lineItems" :key="product.productId"
+            <li v-for="line in lineItems" :key="line.product.productId"
               class="list-group-item d-flex justify-content-between lh-condensed">
               <div>
                 <h6 class="my-0">{{ line.product.name }}</h6>
@@ -148,7 +148,8 @@
 
           $.ajax({
             url: "/Order/Create",
-            data: data,
+            data: JSON.stringify(data),
+            contentType: 'application/json',
             type: 'post',
             error: function (XMLHttpRequest, textStatus, errorThrown) {
               $(".modal-body").html("<strong>ERROR</strong><p>" + XMLHttpRequest.responseText + "</p>")

@@ -1,6 +1,7 @@
 using Moq;
 
 using MyShop.Domain.Models;
+using MyShop.Infrastructure;
 using MyShop.Infrastructure.Repositories;
 using MyShop.Web.Controllers;
 using MyShop.Web.Models;
@@ -12,10 +13,24 @@ public class UnitTest1
   [Fact]
   public async Task CanCreateOrderWithCorrectModel()
   {
-    var orderRepo = new Mock<IRepository<Order>>();
-    var productRepo = new Mock<IRepository<Product>>();
+    var mockOrderRepository = new Mock<IRepository<Order>>();
+    var mockCustomerRepository = new Mock<IRepository<Customer>>();
+    var mockProductRepository = new Mock<IRepository<Product>>();
+    var unitOfWork = new Mock<IUnitOfWork>();
 
-    var controller = new OrderController(orderRepo.Object, productRepo.Object);
+    unitOfWork
+      .Setup(x => x.OrderRepository)
+      .Returns(mockOrderRepository.Object);
+
+    unitOfWork
+      .Setup(x => x.CustomerRepository)
+      .Returns(mockCustomerRepository.Object);
+
+    unitOfWork
+      .Setup(x => x.ProductRepository)
+      .Returns(mockProductRepository.Object);
+
+    var controller = new OrderController(unitOfWork.Object);
 
     var createOrderModel = new CreateOrderModel()
     {
@@ -34,6 +49,6 @@ public class UnitTest1
 
     await controller.Create(createOrderModel);
 
-    orderRepo.Verify(x => x.AddAsync(It.IsAny<Order>()), Times.Once);
+    unitOfWork.Verify(x => x.OrderRepository.AddAsync(It.IsAny<Order>()), Times.Once);
   }
 }

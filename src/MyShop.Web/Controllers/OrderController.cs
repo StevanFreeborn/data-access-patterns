@@ -4,44 +4,60 @@ using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
 
 using MyShop.Domain.Models;
-using MyShop.Infrastructure.Repositories;
+using MyShop.Infrastructure;
 using MyShop.Web.Models;
 
 namespace MyShop.Web.Controllers;
 
-public class OrderController(IRepository<Order> orderRepository, IRepository<Product> productRepository) : Controller
+public class OrderController(IUnitOfWork unitOfWork) : Controller
 {
-  private readonly IRepository<Order> _orderRepository = orderRepository;
-  private readonly IRepository<Product> _productRepository = productRepository;
+  private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
   public async Task<IActionResult> Index()
   {
     Expression<Func<Order, bool>> criteria = order => order.OrderDate > DateTime.UtcNow.AddDays(-1);
-    var orders = await _orderRepository.Find(criteria);
+    var orders = await _unitOfWork.OrderRepository.Find(criteria);
     return View(orders);
   }
 
   public async Task<IActionResult> Create()
   {
-    var products = await _productRepository.All();
+    var products = await _unitOfWork.ProductRepository.All();
     return View(products);
   }
 
   [HttpPost]
   public async Task<IActionResult> Create([FromBody] CreateOrderModel model)
   {
-    if (!model.LineItems.Any()) return BadRequest("Please submit line items");
+    if (model.LineItems.Count is 0) return BadRequest("Please submit line items");
 
     if (string.IsNullOrWhiteSpace(model.Customer.Name)) return BadRequest("Customer needs a name");
 
-    var customer = new Customer
+    var customers = await _unitOfWork.CustomerRepository.Find(c => c.Name == model.Customer.Name);
+    var customer = customers.FirstOrDefault();
+
+    if (customer is not null)
     {
-      Name = model.Customer.Name,
-      ShippingAddress = model.Customer.ShippingAddress,
-      City = model.Customer.City,
-      PostalCode = model.Customer.PostalCode,
-      Country = model.Customer.Country
-    };
+      customer.ShippingAddress = model.Customer.ShippingAddress;
+      customer.City = model.Customer.City;
+      customer.PostalCode = model.Customer.PostalCode;
+      customer.Country = model.Customer.Country;
+
+      await _unitOfWork.CustomerRepository.UpdateAsync(customer);
+    }
+    else
+    {
+      customer = new Customer
+      {
+        Name = model.Customer.Name,
+        ShippingAddress = model.Customer.ShippingAddress,
+        City = model.Customer.City,
+        PostalCode = model.Customer.PostalCode,
+        Country = model.Customer.Country
+      };
+
+      await _unitOfWork.CustomerRepository.AddAsync(customer);
+    }
 
     var order = new Order
     {
@@ -52,8 +68,8 @@ public class OrderController(IRepository<Order> orderRepository, IRepository<Pro
       Customer = customer
     };
 
-    await _orderRepository.AddAsync(order);
-    await _orderRepository.SaveChangesAsync();
+    await _unitOfWork.OrderRepository.AddAsync(order);
+    await _unitOfWork.SaveChangesAsync();
     return Ok("Order Created");
   }
 

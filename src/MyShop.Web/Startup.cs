@@ -24,6 +24,7 @@ namespace MyShop.Web
       services.AddScoped<IRepository<Customer>, CustomerRepository>();
       services.AddScoped<IRepository<Order>, OrderRepository>();
       services.AddScoped<IRepository<Product>, ProductRepository>();
+      services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
 
     public void CreateInitialDatabase()

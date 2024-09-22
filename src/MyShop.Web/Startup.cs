@@ -30,6 +30,7 @@ namespace MyShop.Web
     public void CreateInitialDatabase()
     {
       using var context = new ShoppingContext();
+      context.Database.EnsureDeleted();
       context.Database.EnsureCreated();
 
       var camera = new Product { Name = "Canon EOS 70D", Price = 599m };

@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 using MyShop.Domain.Models;
 using MyShop.Infrastructure.Lazy;
 
@@ -9,6 +11,19 @@ public class CustomerRepository(ShoppingContext context) : GenericRepository<Cus
   {
     var customers = await base.All();
     return customers.Select(c => CustomerProxy.FromCustomer(c));
+  }
+
+  public override async Task<Customer?> Get(Guid id)
+  {
+    var customerId = await _context.Customers
+      .Where(c => c.CustomerId == id)
+      .Select(c => c.CustomerId)
+      .SingleAsync();
+
+    return new GhostCustomer(() => base.Get(customerId).Result!)
+    {
+      CustomerId = customerId
+    };
   }
 
   public override Task<Customer> UpdateAsync(Customer entity)

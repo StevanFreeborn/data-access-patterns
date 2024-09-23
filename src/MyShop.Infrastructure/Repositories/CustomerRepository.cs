@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 using MyShop.Domain.Lazy;
 using MyShop.Domain.Models;
+using MyShop.Infrastructure.Lazy;
 using MyShop.Infrastructure.Services;
 
 namespace MyShop.Infrastructure.Repositories;
@@ -11,16 +12,7 @@ public class CustomerRepository(ShoppingContext context) : GenericRepository<Cus
   public override async Task<IEnumerable<Customer>> All()
   {
     var customers = await base.All();
-
-    return customers.Select(c =>
-    {
-      c.ProfilePictureValueHolder = new ValueHolder<byte[]>(parameter =>
-      {
-        return ProfilePictureService.GetProfilePicture(parameter.ToString() ?? string.Empty);
-      });
-
-      return c;
-    });
+    return customers.Select(c => new CustomerProxy(c));
   }
 
   public override Task<Customer> UpdateAsync(Customer entity)

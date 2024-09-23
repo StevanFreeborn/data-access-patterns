@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace MyShop.Domain.Models;
+namespace MyShop.Infrastructure.Services;
 
 public class ProfilePictureService
 {

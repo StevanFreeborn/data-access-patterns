@@ -19,4 +19,10 @@ public class ShoppingContext : DbContext
         // .UseLazyLoadingProxies()
         .UseSqlite("Data Source=orders.db");
   }
+
+  protected override void OnModelCreating(ModelBuilder modelBuilder)
+  {
+    modelBuilder.Entity<Customer>().Ignore(c => c.ProfilePicture);
+    modelBuilder.Entity<Customer>().Ignore(c => c.ProfilePictureValueHolder);
+  }
 }

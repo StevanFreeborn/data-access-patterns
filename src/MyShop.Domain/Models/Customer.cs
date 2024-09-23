@@ -1,4 +1,6 @@
-﻿namespace MyShop.Domain.Models;
+﻿using MyShop.Domain.Lazy;
+
+namespace MyShop.Domain.Models;
 
 public class Customer
 {
@@ -10,16 +12,14 @@ public class Customer
   public string PostalCode { get; set; } = string.Empty;
   public string Country { get; set; } = string.Empty;
 
-  private byte[]? _profilePicture;
-  public byte[]? ProfilePicture
+  // NOTE: This is not thread-safe. Should instead use built-in Lazy<T> class.
+  public IValueHolder<byte[]> ProfilePictureValueHolder { get; set; } = null!;
+
+  public byte[] ProfilePicture
   {
     get
     {
-      return _profilePicture ??= ProfilePictureService.GetProfilePicture(Name);
-    }
-    set
-    {
-      _profilePicture = value;
+      return ProfilePictureValueHolder.GetValue(Name);
     }
   }
 

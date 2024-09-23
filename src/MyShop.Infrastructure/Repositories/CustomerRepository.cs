@@ -1,9 +1,5 @@
-using Microsoft.EntityFrameworkCore;
-
-using MyShop.Domain.Lazy;
 using MyShop.Domain.Models;
 using MyShop.Infrastructure.Lazy;
-using MyShop.Infrastructure.Services;
 
 namespace MyShop.Infrastructure.Repositories;
 

@@ -8,7 +8,7 @@ public class CustomerRepository(ShoppingContext context) : GenericRepository<Cus
   public override async Task<IEnumerable<Customer>> All()
   {
     var customers = await base.All();
-    return customers.Select(c => new CustomerProxy(c));
+    return customers.Select(c => CustomerProxy.FromCustomer(c));
   }
 
   public override Task<Customer> UpdateAsync(Customer entity)
